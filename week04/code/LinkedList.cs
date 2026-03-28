@@ -33,8 +33,22 @@ public class LinkedList : IEnumerable<int>
     public void InsertTail(int value)
     {
         // TODO Problem 1
+        // create a new node 
+        Node newNode = new(value);
+        // if list empty point head and tail to this node
+        if (_tail is null)
+        {
+            _head = newNode;
+            _tail = newNode;
+        }
+        // not empty list
+        else
+        {
+            newNode.Prev = _tail; //connect prev node to be the tail
+            _tail.Next = newNode; // make new node be next to previous tail
+            _tail = newNode; // set tail to newnode
+        }
     }
-
 
     /// <summary>
     /// Remove the first node (i.e. the head) of the linked list.
@@ -58,13 +72,25 @@ public class LinkedList : IEnumerable<int>
         }
     }
 
-
     /// <summary>
     /// Remove the last node (i.e. the tail) of the linked list.
     /// </summary>
     public void RemoveTail()
     {
         // TODO Problem 2
+        // if the list has only one item, set both tail and head to null
+        // this will equal to am empty list
+        if (_tail == _head)
+        {
+            _head = null;
+            _tail = null;
+        }
+        // if the list has more than one item, only tail gets affected
+        else if (_tail is not null)
+        {
+            _tail.Prev!.Next = null; // disconnect previous node from old tail
+            _tail = _tail.Prev; // update the tail to point to previous node.
+        }
     }
 
     /// <summary>
@@ -109,6 +135,35 @@ public class LinkedList : IEnumerable<int>
     public void Remove(int value)
     {
         // TODO Problem 3
+        // begin searching the list at the head.
+        Node? currentNode = _head;
+        // while node is not null keep seeing looking at nodes.
+        while (currentNode is not null)
+        {
+            if (currentNode.Data == value)
+            {
+              //if data is head or tail call methods above
+              if (currentNode == _head)
+                {
+                    // call removeHead to remove head
+                    RemoveHead();
+
+                } else if (currentNode == _tail)
+                {
+                    // call the removetail to remove tail
+                    RemoveTail();
+
+                } else  // node is not head or tail
+                {
+                    currentNode.Next?.Prev = currentNode.Prev; // set next node's previous node the current's node previous.
+                    currentNode.Prev?.Next = currentNode.Next; // set previous node's next node to the current's node next.
+                }
+                // exit the function if this was successful.
+                return;
+            }
+            // go to next node to search for the value
+            currentNode = currentNode.Next;
+        } 
     }
 
     /// <summary>
@@ -117,6 +172,22 @@ public class LinkedList : IEnumerable<int>
     public void Replace(int oldValue, int newValue)
     {
         // TODO Problem 4
+        // begin looking at the head to search for value 
+        Node? currentNode = _head;
+        // loop through the linked list
+        while (currentNode is not null)
+        {
+            // if the current node's value is the target update the value
+            if (currentNode.Data == oldValue)
+            {
+                // update old for new value
+                currentNode.Data = newValue;
+            } else 
+            {
+                //move to the next node
+                currentNode = currentNode.Next;
+            }
+        }
     }
 
     /// <summary>
@@ -147,7 +218,12 @@ public class LinkedList : IEnumerable<int>
     public IEnumerable Reverse()
     {
         // TODO Problem 5
-        yield return 0; // replace this line with the correct yield return statement(s)
+        var currentNode = _tail; // start at the tail and go backwards
+        while (currentNode is not null)
+        {
+            yield return currentNode.Data; // Provide (yield) each time to the user
+            currentNode = currentNode.Prev; // go backwards on the linked list.
+        }
     }
 
     public override string ToString()
